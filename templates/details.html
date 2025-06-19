@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %} {{plant.name}} | Plant Details {% endblock %}
+
+{% block heading %}
+{% if form %}Edit Plant
+{% endif %}
+{% endblock %}
+
+{% block content %}
+{% if form %}
+<div class="edit-container">
+  <div class="left-section">
+    <div class="image-container">
+      {% if plant.image_filename %}
+      <img src="{{ url_for('static', filename='plants/' ~ plant.image_filename) }}" height="300">
+      {% endif %}
+      <button id="openChange" class="plant-btn small-btn">Change Image</button>
+    </div>
+
+  </div>
+  <div class="form-container small-form">
+    {% if message %}
+    <div class="error-message">{{ message }}</div>
+    {% endif %}
+    <form action="{{ url_for('plant_details', plant_id=plant.id, edit=1) }}" method="POST"
+      class="plant-form small-form">
+      <div class="inline-field">
+        {{ form.name.label }} {{ form.name(value=plant.name) }}
+      </div>
+      <div class="inline-field">
+        {{ form.type.label }} {{ form.type(value=plant.type) }}
+      </div>
+      <div class="inline-field">
+        {{ form.bio.label }} {{ form.bio(value=plant.bio, rows=4, cols=30) }}
+      </div>
+      {{ form.csrf_token }}
+      {{ form.submit(class="plant-btn small-btn") }}
+    </form>
+  </div>
+  <div class="action-card">
+    <button id="openDelete" class="plant-btn small-btn">Delete Plant</button>
+    <p class="delete-caution">⚠️ Deleting this plant is irreversible.</p>
+  </div>
+</div>
+{% else %}
+<div class="view-container">
+  <div class="view-image">
+    {% if plant.image_filename %}
+    <img src="{{ url_for('static', filename='plants/' ~ plant.image_filename) }}" height="350">
+    {% endif %}
+  </div>
+  <div class="details-card">
+    <div class="details-view">
+      <h1>{{ plant.name }}</h1>
+      <h2 style="font-weight: 500;">Plant Type: {{ plant.type }}</h2>
+      <p>{{ plant.bio }}</p>
+      <hr>
+    </div>
+  </div>
+  <div class="source">
+    <small class="source-heading">Offered By</small>
+    {% if plant.poster.id == 1 %}
+    <div class="source-entry">
+      <span class="source-firm">Green Given</span> –
+      <span class="source-person">{{ plant.poster.full_name }}</span>
+    </div>
+    {% else %}
+    <div class="source-entry">
+      <span class="source-firm">Potted Forward</span> –
+      <span class="source-person">{{ plant.poster.full_name }}</span>
+    </div>
+    {% endif %}
+    {% if session['user'] %}
+    <button id="openAdopt" class="plant-btn small-btn" style="margin-top:16px;">Adopt</button>
+    {% else %}
+    <a href="{{ url_for('login') }}" class="adopt-prompt-link" style="margin-top:16px; display:inline-block;">Log in to
+      request adoption</a>
+    {% endif %}
+  </div>
+</div>
+
+{% endif %}
+
+<!-- Change Image Modal -->
+<div id="changeModal" class="modal">
+  <div class="modal-content">
+    <span class="closeChange">&times;</span>
+    <h3>Change Plant Image</h3>
+    <form action="{{ url_for('change_image', plant_id=plant.id) }}" method="POST" enctype="multipart/form-data">
+      {{ form.csrf_token }}
+      <label for="image_file">Select new image:</label><br>
+      <div class="file-input-wrapper">
+        <input type="file" id="image_file" name="image_file" accept="image/*" required>
+        <span id="changeFileName" class="file-name"></span>
+      </div>
+      <br><br>
+      <button type="submit" class="plant-btn">Change Image</button>
+    </form>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal">
+  <div class="modal-content">
+    <span class="closeDelete">&times;</span>
+    <h3>Confirm Delete</h3>
+    <p>Are you sure you want to delete this plant?</p>
+    <form action="{{ url_for('delete_plant', plant_id=plant.id) }}" method="POST">
+      {{ form.csrf_token }}
+      <button type="submit" class="plant-btn">Confirm & Delete</button>
+    </form>
+  </div>
+</div>
+
+<!-- Adopt Confirmation Modal -->
+<div id="adoptModal" class="modal">
+  <div class="modal-content">
+    <span class="closeAdopt">&times;</span>
+    <h3>Confirm Adoption</h3>
+    <p>Are you sure you want to adopt this plant?</p>
+    <button id="confirmAdopt" class="plant-btn">Yes, Adopt</button>
+  </div>
+</div>
+
+<!-- Modal script -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Display selected file name in Change Image modal
+    const imageInput = document.getElementById('image_file');
+    const fileNameSpan = document.getElementById('changeFileName');
+    if (imageInput && fileNameSpan) {
+      imageInput.onchange = () => {
+        fileNameSpan.textContent = imageInput.files[0]?.name || '';
+      };
+    }
+    const changeBtn = document.getElementById('openChange');
+    const deleteBtn = document.getElementById('openDelete');
+    const adoptBtn = document.getElementById('openAdopt');
+    const changeModal = document.getElementById('changeModal');
+    const deleteModal = document.getElementById('deleteModal');
+    const adoptModal = document.getElementById('adoptModal');
+    const closeChange = document.querySelector('.closeChange');
+    const closeDelete = document.querySelector('.closeDelete');
+    const closeAdopt = document.querySelector('.closeAdopt');
+    const confirmAdopt = document.getElementById('confirmAdopt');
+
+    // Open modals
+    if (changeBtn) changeBtn.onclick = () => { changeModal.style.display = 'block'; };
+    if (deleteBtn) deleteBtn.onclick = () => { deleteModal.style.display = 'block'; };
+    if (adoptBtn) adoptBtn.onclick = () => { adoptModal.style.display = 'block'; };
+
+    // Close modals
+    closeChange.onclick = () => { changeModal.style.display = 'none'; };
+    closeDelete.onclick = () => { deleteModal.style.display = 'none'; };
+    closeAdopt.onclick = () => { adoptModal.style.display = 'none'; };
+
+    // Close when clicking outside the modal
+    window.onclick = (e) => {
+      if (e.target === changeModal) changeModal.style.display = 'none';
+      if (e.target === deleteModal) deleteModal.style.display = 'none';
+      if (e.target === adoptModal) adoptModal.style.display = 'none';
+    };
+
+    // Confirm adoption
+    confirmAdopt.onclick = () => {
+      adoptModal.style.display = 'none';
+      // Display client-side flash message
+      let flashes = document.querySelector('.flashes');
+      if (!flashes) {
+        flashes = document.createElement('div');
+        flashes.className = 'flashes';
+        document.body.appendChild(flashes);
+      }
+      const alert = document.createElement('div');
+      alert.className = 'alert info';
+      alert.textContent = 'Your request to adopt is registered and we will contact you soon.';
+      flashes.appendChild(alert);
+      // Auto-dismiss
+      setTimeout(() => { alert.remove(); }, 3000);
+    };
+  });
+</script>
+
+{% endblock %}

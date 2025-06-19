@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found{% endblock %}
+
+{% block heading %}404 - Page Not Found{% endblock %}
+
+{% block content %}
+  <div style="text-align:center; margin: 60px 0;">
+    <p>Sorry, the page you're looking for doesn't exist.</p>
+    <a href="{{ url_for('homepage') }}" class="plant-btn">Return Home</a>
+  </div>
+{% endblock %}

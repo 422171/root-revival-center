@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %} {% endblock %} - Root Revival Center</title>
+  <link rel="icon" href="{{ url_for('static', filename='icon.png') }}">
+  <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}" />
+</head>
+
+<body>
+  <div class="nav-div">
+    <ul style="list-style-type: none;float: right;font-size: large;">
+      <li style="display:inline"><a href="{{url_for('homepage')}}">Home</a></li>
+      <li style="display:inline"><a href="{{url_for('about')}}">About</a></li>
+      {% if 'user' in session %}
+      <li style="display:inline"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+      <li style="display:inline"><a href="{{url_for('logout')}}">Log Out</a></li>
+      {% else %}
+      <li style="display:inline"><a href="{{url_for('signup')}}">Sign Up</a></li>
+      <li style="display:inline"><a href="{{url_for('login')}}">Login</a></li>
+      {% endif%}
+    </ul>
+  </div>
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <div class="flashes">
+    {% for msg in messages %}
+    <div class="alert info">{{ msg }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
+  <h1 id="title"> {% block heading %} {% endblock %} </h1>
+  <div id="content">
+    {% block content %} {% endblock %}
+  </div>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const flashes = document.querySelector('.flashes');
+        if (flashes) flashes.remove();
+      }, 3000);
+    });
+  </script>
+</body>
+
+</html>

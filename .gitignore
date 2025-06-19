@@ -1,0 +1,28 @@
+# Python environment
+flaskenv/
+venv/
+__pycache__/
+*.pyc
+
+# Instance folder
+instance/
+
+# SQLite database
+*.db
+plants.db
+
+# VSCode settings
+.vscode/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Env files
+.env
+
+# Other
+*.egg-info/
+migrations/

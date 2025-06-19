@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %} Dashboard {% endblock %}
+
+{% block content %}
+<div>
+    <div style="margin: 60px auto 20px;">
+        <h2>Hey, {{ user_full_name }}!</h2>
+    </div>
+    <h2>
+        <center>My Plants</center>
+    </h2>
+    {% if plants %}
+    <table>
+        <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Actions</th>
+        </tr>
+        {% for plant in plants %}
+        <tr>
+            <td>
+                {% if plant.image_filename %}
+                <img src="{{ url_for('static', filename='plants/' ~ plant.image_filename) }}" height="60">
+                {% endif %}
+            </td>
+            <td>{{ plant.name }}</td>
+            <td>{{ plant.type }}</td>
+            <td>
+                <a href="{{ url_for('plant_details', plant_id=plant.id, edit=1) }}" class="plant-btn">Edit</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <hr>
+    <div style="text-align: center; padding: 15px auto;">
+        <p style="padding-bottom: 7px;">You have not created any plants yet. </p>
+        <p>Start posting a plant to forward in the community, and your uploaded plants will appear here.</p>
+    </div>
+    {% endif %}
+    <div style="margin-top: 15px; text-align: center;">
+        <a href="{{ url_for('create_plant') }}" class="plant-btn">Add a Plant</a>
+    </div>
+</div>
+{% endblock %}

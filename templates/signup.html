@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}
+Sign-Up
+{% endblock %}
+
+{% block heading %}
+Sign Up
+{% endblock %}
+
+{% block content %}
+
+{% if form %}
+<form action="{{url_for('signup')}}" method="POST" class="auth-form">
+    {{ form.full_name.label }}
+    {{ form.full_name }}
+    <br>
+    {% if form.full_name.errors %}
+    {% for error in form.full_name.errors %}
+    <b style="color:tomato;"> {{ error }} </b>
+    <br>
+    {% endfor %}
+    {% endif %}
+
+    {{ form.email.label }}
+    {{ form.email }}
+    <br>
+    {% if form.email.errors %}
+    {% for error in form.email.errors %}
+    <b style="color:tomato;"> {{ error }} </b>
+    <br>
+    {% endfor %}
+    {% endif %}
+
+    {{ form.password.label }}
+    {{ form.password }}
+    <br>
+    {% if form.password.errors %}
+    {% for error in form.password.errors %}
+    <b style="color:tomato;"> {{ error }} </b>
+    <br>
+    {% endfor %}
+    {% endif %}
+
+    {{ form.confirm_password.label }}
+    {{ form.confirm_password }}
+    <br>
+    {% if form.confirm_password.errors %}
+    {% for error in form.confirm_password.errors %}
+    <b style="color:tomato;"> {{ error }} </b>
+    <br>
+    {% endfor %}
+    {% endif %}
+
+    {% if message %}
+    <b style="color:tomato;"> {{ message }} </b>
+    {% endif %}
+    {{ form.csrf_token }}
+    {{ form.submit(class="auth-btn") }}
+</form>
+{% endif %}
+{% endblock %}

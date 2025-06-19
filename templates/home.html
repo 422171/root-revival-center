@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %} Home {% endblock %}
+
+{% block heading %}
+<center>Root Revival Center &#x1F331;</center>
+{% endblock %}
+
+{% block content%}
+  <table>
+    <tr>
+      <th>Image</th>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Bio</th>
+    </tr>
+    {% for plant in plants %}
+    <tr style="cursor: pointer;" onclick="window.location.href=`{{ url_for('plant_details', plant_id=plant.id) }}`">
+        <td>
+            <img src="{% if plant.image_filename %}{{ url_for('static', filename='plants/' ~ plant.image_filename) }}{% else %}{{ url_for('static', filename='plants/' ~ plant.id|string ~ '.png') }}{% endif %}" height="100">
+        </td>
+        <td>{{ plant.name }}</td>
+        <td>{{ plant.type }}</td>
+        <td>{{ plant.bio }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endblock %}
